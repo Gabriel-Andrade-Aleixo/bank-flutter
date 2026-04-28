@@ -54,12 +54,15 @@ class _FormularioContatoState extends State<FormularioContato> {
               rotulo: 'Nome',
               dica: 'Ex: Maria Oliveira',
               icone: Icons.person,
+              tipoTeclado: TextInputType.text, // teclado padrão
             ),
+
             Editor(
               controlador: _controladorConta,
               rotulo: 'Número da conta',
               dica: '0000',
               icone: Icons.numbers,
+              tipoTeclado: TextInputType.number, // teclado numérico
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
