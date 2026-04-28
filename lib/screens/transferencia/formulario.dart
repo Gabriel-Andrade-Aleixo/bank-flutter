@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../components/editor.dart';
 import '../../models/transferencia.dart';
 
@@ -29,6 +30,22 @@ class _FormularioTransferenciaState extends State<FormularioTransferencia> {
     super.dispose();
   }
 
+  void _criaTransferencia(BuildContext context) {
+    final int? numeroConta = int.tryParse(
+      _controladorCampoNumeroConta.text.trim(),
+    );
+    final double? valor = double.tryParse(_controladorCampoValor.text.trim());
+
+    if (numeroConta != null && valor != null) {
+      final transferenciaCriada = Transferencia(
+        valor: valor,
+        numeroConta: numeroConta,
+      );
+
+      Navigator.pop(context, transferenciaCriada);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,21 +65,8 @@ class _FormularioTransferenciaState extends State<FormularioTransferencia> {
               icone: Icons.monetization_on,
             ),
             ElevatedButton(
+              onPressed: () => _criaTransferencia(context),
               child: const Text(_textBotaoConfirmar),
-              onPressed: () {
-                final numeroConta = int.tryParse(
-                  _controladorCampoNumeroConta.text,
-                );
-                final valor = double.tryParse(_controladorCampoValor.text);
-
-                if (numeroConta != null && valor != null) {
-                  final transferenciaCriada = Transferencia(
-                    valor: valor,
-                    numeroConta: numeroConta,
-                  );
-                  Navigator.pop(context, transferenciaCriada);
-                }
-              },
             ),
           ],
         ),

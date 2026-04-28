@@ -13,15 +13,15 @@ class Transferencia {
     return {
       'id': id,
       'valor': valor,
-      'numeroConta': numeroConta,
+      'numero_conta': numeroConta,
     };
   }
 
   factory Transferencia.fromMap(Map<String, dynamic> map) {
     return Transferencia(
-      id: map['id'],
-      valor: map['valor'],
-      numeroConta: map['numeroConta'],
+      id: map['id'] as int?,
+      valor: (map['valor'] as num).toDouble(),
+      numeroConta: map['numero_conta'] as int,
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../database/transferencia_dao.dart';
+
+import '../../database/app_database.dart';
 import '../../models/transferencia.dart';
 import 'formulario.dart';
 
@@ -11,46 +12,33 @@ class ListaTransferencias extends StatefulWidget {
 }
 
 class _ListaTransferenciasState extends State<ListaTransferencias> {
-  final TransferenciaDao _dao = TransferenciaDao();
   late Future<List<Transferencia>> _futureTransferencias;
 
   @override
   void initState() {
     super.initState();
-    _futureTransferencias = _dao.buscarTodas();
-  }
-
-  void _atualizaLista() {
-    setState(() {
-      _futureTransferencias = _dao.buscarTodas();
-    });
+    _futureTransferencias = buscarTransferencias();
   }
 
   Future<void> _abrirFormulario() async {
-    final transferencia = await Navigator.push<Transferencia>(
+    final Transferencia? transferenciaRecebida = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const FormularioTransferencia()),
     );
 
-    if (transferencia != null) {
-      await _dao.inserir(transferencia);
-      _atualizaLista();
+    if (transferenciaRecebida != null) {
+      await salvarTransferencia(transferenciaRecebida);
+
+      setState(() {
+        _futureTransferencias = buscarTransferencias();
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Transferências',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Transferências')),
       body: FutureBuilder<List<Transferencia>>(
         future: _futureTransferencias,
         builder: (context, snapshot) {
@@ -59,23 +47,21 @@ class _ListaTransferenciasState extends State<ListaTransferencias> {
           }
 
           if (snapshot.hasError) {
-            return Center(
-              child: Text('Erro ao carregar dados: ${snapshot.error}'),
-            );
+            return const Center(child: Text('Erro ao carregar transferências'));
           }
 
           final transferencias = snapshot.data ?? [];
 
           if (transferencias.isEmpty) {
             return const Center(
-              child: Text('Nenhuma transferência cadastrada.'),
+              child: Text('Nenhuma transferência encontrada'),
             );
           }
 
           return ListView.builder(
             itemCount: transferencias.length,
-            itemBuilder: (context, indice) {
-              final transferencia = transferencias[indice];
+            itemBuilder: (context, index) {
+              final transferencia = transferencias[index];
               return ItemTransferencia(transferencia);
             },
           );
